@@ -75,6 +75,7 @@ https://www.gams.com/download/ にアクセスし、ライセンスのバージ�
 
     <br/>
 - **ソルバーの選択に関して**
+
     **基本的によく使われるソルバーを以下に示す**
     - **MILP (Mixed Integer Linear Programming)の場合: gurobi, cplex**
     - **MINLP (Mixed Integer Non-Linear Programming)の場合: antigone**
@@ -88,6 +89,7 @@ https://www.gams.com/download/ にアクセスし、ライセンスのバージ�
     <br/>
         
 - **データの入力ファイルに関して** 
+
     データの入力方法として.xlsxや.csvを使うことがあると思うが、.xlsxの方がデータの読み取り時間が長かったような気がする。
     
     一回のシミュレーションにおいては、実行時間のみ気にすればいいと思うが、モンテカルロシミュレーションなどにより繰り返し最適化計算を実行する場合には、入力データを読み取る時間も無視できなくなってくる。
