@@ -22,7 +22,8 @@ https://www.gams.com/download/ にアクセスし、ライセンスのバージ�
 ## プログラムの書き方
 
 GAMSの基本的なプログラムの流れは以下の通り。  
-```flow
+
+<!--```flow
 st=>start: 処理開始
 e=>end: 処理終了
 io1=>inputoutput: データ入力
@@ -32,6 +33,9 @@ io2=>inputoutput: 最適化結果出力
 
 st->io1->op1->op2->io2->e
 ```
+-->
+![load_image](GAMS_flowchart.png)
+
 基本的にはこの流れで記述していけばよいので、プログラミング自体はそこまで必要にはならない。
 
 #### キーワード
