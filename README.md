@@ -1,5 +1,5 @@
 # GAMSマニュアル
-最終更新日: 2020/03/09
+最終更新日: 2020/03/10
 
 本ファイルは、GAMS(General Algebraic Modeling System)の使用方法についてまとめている。  
 GAMSは松橋研究室でよく使用されている、最適化計算用のソフトウェア。
@@ -20,7 +20,108 @@ https://www.gams.com/download/ にアクセスし、ライセンスのバージ�
 - https://www.youtube.com/watch?v=vSe3YGkUVoc
 
 ## プログラムの書き方
+
+GAMSの基本的なプログラムの流れは以下の通り。  
+```flow
+st=>start: 処理開始
+e=>end: 処理終了
+io1=>inputoutput: データ入力
+op1=>operation: 変数, 制約式の定義
+op2=>operation: モデルのインスタンス化、最適解探索
+io2=>inputoutput: 最適化結果出力
+
+st->io1->op1->op2->io2->e
+```
+基本的にはこの流れで記述していけばよいので、プログラミング自体はそこまで必要にはならない。
+
 #### キーワード
+上図の上の処理から順に解説していく。
+##### データ入力
+* Sets
+
+    添え字のこと。これを用いて各要素にアクセスする。
+    例えば1日のシミュレーションをするとき、タイムステップが1時間ならtが1から24に動くようにセットする。(30分なら1~48)
+    以下の例では、時間と発電機番号をセットとして定義しているが、例えばこれで、p(i,t)とアクセスすれば発電機iの時刻tにおける発電量を表していることになる。
+<定義の仕方>
+    ```
+    name    description     /range/
+    ```
+    <例>
+    ```
+    Sets
+    t                time                            /1*24/
+    i                generator_id                    /1*27/
+    ```
+* Scalar
+
+    スカラー値の定義、1個の値しか持たないため、Setsで定義された添え字ごとに違う値を持つなどの場合はParameterで定義。
+    (ex. 太陽光発電の導入容量[GW]はシミュレーションを通して一定なのでスカラー値、太陽光発電の発電量は時刻に応じて変化するためParameter)
+    下の例では、EVの総数を40台と定義。
+    基本的に定数は大文字の名前をつけると変数と区別ができて可読性がいい。
+
+    <定義の仕方>
+    ```
+    name    description     /value/
+    ```
+
+    <例>
+    ```
+    EV_NUM  Total number of EV /40/
+    ```
+
+* Parameter
+
+    データタイプをParameterとするかTableにするかについては、[GAMSのドキュメント](https://www.gams.com/latest/docs/UG_DataEntry.html)にも書いてあるが、その値がいくつのセットに対して変化するかで決めればよい。
+    基本的に、値が一つのセットに対して変化する場合はParameter、二つ以上のセットに対して変化する場合はTableで定義するのがよい。
+    例えば、太陽光発電の発電量は時刻のみに対して変化するのでParameter、各家庭の電力需要みたいなデータは家のidと時刻の両方に対して変化するのでTableで定義するのがよい。
+    <定義の仕方>
+    ```
+    parameter[s] 
+    param_name[(index_list)] [text] [/ element [=] numerical_value
+                                              {,element [=] numerical_value} /]
+    {,param_name[(index_list)] [text] [/ element [=] numerical_value
+                                              {,element [=] numerical_value} /]} ;
+    ```
+
+    <データ入力例>
+    ```
+    Parameter PV_Data(t)        'PV発電量[MWh]'
+    / 1 0
+      2 0
+      3 0
+      :
+      12 3500
+      13 3200
+      :
+      24 0
+    /
+    ;
+    ```
+
+
+* Table
+    <定義の仕方>
+    ```
+    table table_name[(index_list)]  [text] [EOL
+                    element               { element }     EOL
+    element    numerical_value       { numerical_value} EOL
+    {element    numerical_value       { numerical_value} EOL}] ;
+    ```
+    <例> JEPXの代表日ごとのプライスは、時刻と代表日のセットに対して変化するので以下のようにTable型で定義するのがいい。
+    ```
+    Table
+    JEPX_Price(d)   JEPX Price of each representative day
+        SW      SH      MW      MH      WW      WH
+    1   5.2     6.4     7.2     6.8     6.4     7.0
+    2   6.3     6.2     7.0     7.4     7.3     6.9
+                :
+    48  5.3     6.5     7.1     7.0     6.6     7.2
+    ```
+    データ入力に関しては、csvファイルやexcelファイルで入力することもできる。この辺はなかなか煩雑なので、先輩の書き方とか参考に書いてくのがいいと思われる。
+##### 変数, 制約式の定義
+##### モデルのインスタンス化、最適解探索
+##### 最適化結果出力
+
 #### モデル化時の注意点
 - **最適化問題の種類について**
     
